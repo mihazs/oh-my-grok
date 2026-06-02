@@ -146,8 +146,11 @@ Pair every **don’t** with a **do** in rules (e.g. don’t add global `~/.grok/
 
 ## Verification checklist (before PR / push)
 
-- [ ] `grok plugin validate .` passes
-- [ ] All `hooks/test-*.sh` scripts pass with `GROK_PLUGIN_ROOT` set
+- [ ] CI hook smoke tests pass (same as `.github/workflows/ci.yml`; skip `test-inline-skill-gate.sh`)
+- [ ] `grok plugin validate .` passes (local; Grok CLI not in CI)
+- [ ] All `hooks/test-*.sh` scripts pass with `GROK_PLUGIN_ROOT` set (except inline E2E)
+- [ ] Conventional commit message if the change should appear in the next release
+- [ ] Do not bump `plugin.json` version — release-please handles it via Release PR
 - [ ] No leaked home-directory paths in tracked files
 - [ ] `hooks/hooks.json` uses `${GROK_PLUGIN_ROOT}` for commands
 - [ ] New skill has frontmatter `name` + `description` triggers; `user_invocable: true` if slash command

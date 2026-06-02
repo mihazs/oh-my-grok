@@ -1,5 +1,7 @@
 # oh-my-grok
 
+[![CI](https://github.com/mihazs/oh-my-grok/actions/workflows/ci.yml/badge.svg)](https://github.com/mihazs/oh-my-grok/actions/workflows/ci.yml)
+
 Grok plugin: skill gate, merged `UserPromptSubmit`, Ralph/ultrawork loops, todo + boulder continuation, and unified `Stop` chain.
 
 **Author:** mihazs · **Repository:** https://github.com/mihazs/oh-my-grok
@@ -13,6 +15,12 @@ Do **not** copy hooks into `~/.grok/hooks/`. Install the plugin once:
 ```bash
 grok plugin install github:mihazs/oh-my-grok --trust
 grok plugin enable oh-my-grok
+```
+
+Pinned to a release (see [Releases](https://github.com/mihazs/oh-my-grok/releases)):
+
+```bash
+grok plugin install github:mihazs/oh-my-grok@v0.1.0 --trust
 ```
 
 Local development (from a clone of this repo):
@@ -73,6 +81,19 @@ bash hooks/test-todo-boulder.sh
 bash hooks/test-stop-verify.sh
 bash hooks/test-using-superpowers-first-prompt.sh
 bash hooks/test-handoff.sh
+bash hooks/test-workspace-context.sh
 ```
 
 After editing hooks, run `grok plugin update oh-my-grok` (or reinstall from your path) and start a new session if hooks do not reload.
+
+CI runs the same hook tests on every PR (see `.github/workflows/ci.yml`). `grok plugin validate` is local-only.
+
+## Releases
+
+Versions are automated with [release-please](https://github.com/googleapis/release-please):
+
+1. Merge conventional commits to `main` (`feat:`, `fix:`, etc. — see [CONTRIBUTING.md](CONTRIBUTING.md)).
+2. A **Release PR** updates `CHANGELOG.md` and `plugin.json`.
+3. Merge the Release PR → Git tag `vX.Y.Z` and a [GitHub Release](https://github.com/mihazs/oh-my-grok/releases).
+
+Do not bump `plugin.json` manually on feature branches.

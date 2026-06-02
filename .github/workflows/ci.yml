@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate plugin.json syntax
+        run: python3 -m json.tool plugin.json > /dev/null
+
+      - name: Run hook smoke tests
+        env:
+          GROK_PLUGIN_ROOT: ${{ github.workspace }}
+        run: |
+          set -euo pipefail
+          for t in hooks/test-*.sh; do
+            case "$(basename "$t")" in
+              test-inline-skill-gate.sh) continue ;;
+            esac
+            echo "== $t =="
+            bash "$t"
+          done
