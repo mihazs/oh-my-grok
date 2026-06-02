@@ -57,9 +57,21 @@ Do **not** bump `plugin.json` version on feature PRs — release-please updates 
 
 ## Releases
 
-On merge to `main`, [release-please](https://github.com/googleapis/release-please) opens or updates a **Release PR** with `CHANGELOG.md` and `plugin.json` changes. Merging that PR creates the `v*` tag and GitHub Release.
+**When GitHub Actions billing is active:** [release-please](https://github.com/googleapis/release-please) opens a **Release PR** on merge to `main`. Merging it creates the `v*` tag and GitHub Release.
 
-See [README.md](README.md#releases).
+**When Actions is locked:** release manually (no CI required):
+
+```bash
+# 1. Update CHANGELOG.md with ## [X.Y.Z] section
+# 2. Commit to main, then:
+./scripts/manual-release.sh X.Y.Z
+```
+
+The script tags `HEAD`, pushes the tag, and creates/updates the GitHub Release from the CHANGELOG section.
+
+Current release: [v0.1.0](https://github.com/mihazs/oh-my-grok/releases/tag/v0.1.0).
+
+See [README.md](README.md).
 
 ## Maintainers (repo metadata)
 

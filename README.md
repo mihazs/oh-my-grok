@@ -145,7 +145,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) — conventional commits, hook tests, com
 
 - **Issues:** [GitHub Issues](https://github.com/mihazs/oh-my-grok/issues) (bug / feature templates)
 - **Roadmap:** [ROADMAP.md](ROADMAP.md)
-- **Releases:** [CHANGELOG.md](CHANGELOG.md) via [release-please](https://github.com/googleapis/release-please)
+- **Releases:** [CHANGELOG.md](CHANGELOG.md) — [v0.1.0](https://github.com/mihazs/oh-my-grok/releases/tag/v0.1.0) published; use `scripts/manual-release.sh` when Actions billing is locked
 
 ## Develop
 
