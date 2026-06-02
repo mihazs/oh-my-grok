@@ -15,7 +15,7 @@ grok plugin enable oh-my-grok
 Pinned to a release (see [Releases](https://github.com/mihazs/oh-my-grok/releases)):
 
 ```bash
-grok plugin install github:mihazs/oh-my-grok@v0.2.0 --trust
+grok plugin install github:mihazs/oh-my-grok@v0.1.0 --trust
 grok plugin enable oh-my-grok
 ```
 

@@ -54,7 +54,7 @@ Analogous to omo’s **`.omo/`** in OpenCode workspaces. Never store plugin sour
 
 | Skill | Command | Hook involvement |
 |-------|---------|------------------|
-| `agent-skill-gate` | (meta; Read before mutating) | `pre-tool-mutate.sh`, `post-tool-read.sh`, `session-start.sh` |
+| `agent-skill-gate` | (meta; Read before mutating) | `session-start.sh`, `user-prompt.sh`, `pre-tool-mutate.sh`, `post-tool-read.sh` |
 | `ralph-loop` | `/ralph-loop "task"` | `user-prompt.sh`, `stop-hook.sh` |
 | `ulw-loop` | `/ulw-loop "task"` | same + Oracle verification pending |
 | `cancel-ralph` | `/cancel-ralph` | clears `.omg/ralph-loop.local.md` |
@@ -120,6 +120,20 @@ Optional E2E: `bash hooks/test-inline-skill-gate.sh` (needs `grok` CLI + trusted
 | Stop continuation order | `hooks/lib/stop-chain.sh` only | Second Stop hook registration |
 
 Pair every **don’t** with a **do** in rules (e.g. don’t add global `~/.grok/hooks/*.json` → do install via `grok plugin install`).
+
+---
+
+## How skill gate works
+
+1. **SessionStart** (`session-start.sh`) — runs `grok inspect`, caches catalog at `~/.grok/state/skill-gate/<session>/all-skills.json`, injects skill list + rules path.
+2. **UserPromptSubmit** (`user-prompt.sh`) — `build_prompt_reminder()` nudges unloaded skills each prompt.
+3. **PreToolUse** (`pre-tool-mutate.sh`) — on `Write` / `StrReplace` / `EditNotebook` / `Delete`, **deny** if catalog is non-empty and no `SKILL.md` was Read this session (`skills.loaded` empty).
+4. **PostToolUse** (`post-tool-read.sh`) — when agent Reads a catalog `SKILL.md`, append skill id to `skills.loaded`.
+5. **Fail-open** — empty catalog: allow edits after Reading meta-skill `agent-skill-gate`.
+
+Agent workflow: `grok inspect` → Read matching skills → announce `Using <name> to <purpose>` → mutating tools.
+
+Human detail: [docs/skills.md](docs/skills.md#skill-gate-flow). Full meta-skill: `skills/agent-skill-gate/SKILL.md`.
 
 ---
 

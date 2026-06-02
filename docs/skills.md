@@ -2,6 +2,16 @@
 
 oh-my-grok bundles user-invocable skills under `skills/`. Grok discovers them via `grok inspect`.
 
+## Skill gate flow
+
+1. **SessionStart** — build `all-skills.json` from `grok inspect`; inject catalog in `additionalContext`.
+2. **Each prompt** — reminder for unloaded skills (`user-prompt.sh`).
+3. **Before writes** — `pre-tool-mutate.sh` denies mutating tools until at least one catalog skill was Read.
+4. **After Read** — `post-tool-read.sh` records the skill id when path ends with `SKILL.md`.
+5. **Empty catalog** — fail-open; Read `agent-skill-gate` meta-skill once.
+
+Hooks: `hooks/pre-tool-mutate.sh`, `hooks/post-tool-read.sh`, `hooks/session-start.sh`. Rules: `rules/00-agent-skill-gate.md`.
+
 | Skill | Slash / trigger | Purpose |
 |-------|-----------------|--------|
 | `agent-skill-gate` | (meta) | Read before mutating tools; hooks block writes until a catalog skill was Read |

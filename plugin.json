@@ -1,26 +1,29 @@
 {
   "name": "oh-my-grok",
   "version": "0.1.0",
-  "description": "Productivity plugin for Grok Build CLI: skill gate, Ralph/ultrawork loops, todo + boulder continuation, handoff, unified Stop chain. Inspired by oh-my-openagent.",
+  "description": "Essential productivity plugin for Grok Build CLI — skill gate, Ralph & Ultrawork loops, todo/boulder continuation, handoff, unified Stop chain (oh-my-openagent inspired).",
   "author": {
     "name": "mihazs"
   },
   "homepage": "https://github.com/mihazs/oh-my-grok",
   "repository": "https://github.com/mihazs/oh-my-grok",
   "license": "MIT",
+  "categories": ["productivity", "workflow", "loops"],
   "keywords": [
     "grok-build",
     "grok-plugin",
     "grok-cli",
     "oh-my-grok",
-    "skill-gate",
     "ralph-loop",
+    "agentic-workflow",
+    "ai-coding",
+    "productivity",
+    "multi-agent",
+    "xai",
+    "skill-gate",
     "ultrawork",
     "handoff",
     "boulder",
-    "todo-continuation",
-    "agentic-coding",
-    "productivity-plugin",
-    "xai-grok"
+    "todo-continuation"
   ]
 }

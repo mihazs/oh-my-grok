@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="oh-my-grok">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366f1"/>
+      <stop offset="100%" style="stop-color:#22d3ee"/>
+    </linearGradient>
+  </defs>
+  <rect width="120" height="120" rx="24" fill="#0f172a"/>
+  <circle cx="60" cy="60" r="38" fill="none" stroke="url(#g)" stroke-width="6"/>
+  <path d="M60 28 L60 52 M60 68 L60 92 M28 60 L52 60 M68 60 L92 60" stroke="url(#g)" stroke-width="5" stroke-linecap="round"/>
+  <text x="60" y="66" text-anchor="middle" font-family="system-ui,sans-serif" font-size="22" font-weight="700" fill="#f8fafc">OMG</text>
+</svg>

@@ -67,11 +67,9 @@ GitHub description and topics are not stored in git. After major positioning cha
 
 ```bash
 gh repo edit mihazs/oh-my-grok \
-  --description "oh-my-grok: Productivity plugin for Grok Build CLI. Skill gate, Ralph/ultrawork loops, todo + boulder continuation, handoff skills, and unified Stop chain. Inspired by oh-my-openagent. Fills the early Grok Build plugin gap." \
-  --add-topic grok-build --add-topic grok-plugin --add-topic oh-my-grok \
-  --add-topic grok-cli --add-topic ai-coding-agent --add-topic agentic-coding \
-  --add-topic productivity-plugin --add-topic ralph-loop --add-topic multi-agent \
-  --add-topic xai-grok
+  --description "oh-my-grok: Essential productivity plugin for Grok Build CLI — skill gate, Ralph & Ultrawork loops, todo/boulder continuation, handoff, unified Stop chain (oh-my-openagent inspired)" \
+  --homepage "https://github.com/mihazs/oh-my-grok"
+# Topics: grok-build grok-plugin oh-my-grok grok-cli ralph-loop agentic-workflow ai-coding productivity multi-agent xai
 ```
 
 ## Agent contributors
