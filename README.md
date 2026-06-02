@@ -4,7 +4,7 @@ Grok plugin: skill gate, merged `UserPromptSubmit`, Ralph/ultrawork loops, todo 
 
 **Author:** mihazs · **Repository:** https://github.com/mihazs/oh-my-grok
 
-Inspired by [oh-my-openagent](https://github.com/code-yeongyu/oh-my-openagent). Workspace runtime state lives under **`.grok/`** (not `.omo/`) to avoid conflicting with OpenCode.
+Inspired by [oh-my-openagent](https://github.com/code-yeongyu/oh-my-openagent). Workspace runtime state lives under **`.omg/`** (oh-my-grok; analogous to omo’s `.omo/`).
 
 ## Install (plugin only)
 

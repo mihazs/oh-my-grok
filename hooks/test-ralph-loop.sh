@@ -11,7 +11,7 @@ export GROK_WORKSPACE_ROOT="${tmpdir:-}"
 tmpdir="$(mktemp -d)"
 export GROK_WORKSPACE_ROOT="$tmpdir"
 trap 'rm -rf "$tmpdir"' EXIT
-mkdir -p "$tmpdir/.grok"
+mkdir -p "$tmpdir/.omg"
 
 # Start loop
 printf '%s\n' '{"hookEventName":"UserPromptSubmit","sessionId":"'"$GROK_SESSION_ID"'","workspaceRoot":"'"$GROK_WORKSPACE_ROOT"'","prompt":"/ralph-loop \"fix tests\" --max-iterations=3"}' \
@@ -19,7 +19,7 @@ printf '%s\n' '{"hookEventName":"UserPromptSubmit","sessionId":"'"$GROK_SESSION_
   >"${tmpdir}/start.json"
 rg -q 'Ralph Loop|ralph-loop.local' "${tmpdir}/start.json" \
   || { echo "start failed:"; cat "${tmpdir}/start.json"; exit 1; }
-test -f "${tmpdir}/.grok/ralph-loop.local.md" || { echo "state file missing"; exit 1; }
+test -f "${tmpdir}/.omg/ralph-loop.local.md" || { echo "state file missing"; exit 1; }
 
 # Stop without promise -> block
 printf '%s\n' '{"hookEventName":"stop","sessionId":"'"$GROK_SESSION_ID"'","workspaceRoot":"'"$GROK_WORKSPACE_ROOT"'","stopReason":"end_turn","last_assistant_message":"still working"}' \
@@ -32,7 +32,7 @@ rg -q 'RALPH LOOP' "${tmpdir}/block.json" || { cat "${tmpdir}/block.json"; exit 
 printf '%s\n' '{"hookEventName":"stop","sessionId":"'"$GROK_SESSION_ID"'","workspaceRoot":"'"$GROK_WORKSPACE_ROOT"'","stopReason":"end_turn","last_assistant_message":"done <promise>DONE</promise>"}' \
   | GROK_HOOK_EVENT=stop bash "${HOOKS_DIR}/run-hook.sh" stop-hook.sh >"${tmpdir}/done.json"
 test "$(cat "${tmpdir}/done.json")" = "{}" || { echo "expected allow:"; cat "${tmpdir}/done.json"; exit 1; }
-test ! -f "${tmpdir}/.grok/ralph-loop.local.md" || { echo "state should be cleared"; exit 1; }
+test ! -f "${tmpdir}/.omg/ralph-loop.local.md" || { echo "state should be cleared"; exit 1; }
 
 # Cancel
 printf '%s\n' '{"hookEventName":"UserPromptSubmit","sessionId":"'"$GROK_SESSION_ID"'","workspaceRoot":"'"$GROK_WORKSPACE_ROOT"'","prompt":"/ralph-loop again"}' \

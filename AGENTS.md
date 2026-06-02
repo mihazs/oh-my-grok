@@ -6,7 +6,7 @@ Grok plugin — hooks, skills, and rules for agent skill gate + continuation loo
 
 - Read `README.md` for install and commands.
 - Hook architecture: `hooks/README.md`.
-- Workspace runtime state: `.grok/` in the project (boulder, ralph-loop, todos).
+- Workspace runtime state: `.omg/` in the project (boulder, ralph-loop, todos).
 
 ## Development
 

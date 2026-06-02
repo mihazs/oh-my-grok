@@ -7,7 +7,7 @@
 
 # Priority:
 #   1. Ralph / ultrawork (explicit loop state; not gated by /stop-continuation)
-#   2. Boulder plan (.grok/boulder.json) — skipped when auto-continue paused
+#   2. Boulder plan (.omg/boulder.json) — skipped when auto-continue paused
 #   3. Todo list (TodoWrite) — skipped when paused
 #   4. Root plan.md checkboxes — skipped when paused
 #

@@ -10,7 +10,7 @@ Plugin manifest: **`hooks/hooks.json`** (loaded via `GROK_PLUGIN_ROOT`). **Do no
 | `UserPromptSubmit` | **`user-prompt.sh`** | **One** merged `additionalContext` (see below) |
 | `PreToolUse` | `pre-tool-mutate.sh` | Block writes until a skill is Read |
 | `PostToolUse` (Read) | `post-tool-read.sh` | Mark skill loaded when `SKILL.md` is Read |
-| `PostToolUse` (TodoWrite) | `post-tool-todo-write.sh` | Mirror todos → `.grok/todos/<session>.json` |
+| `PostToolUse` (TodoWrite) | `post-tool-todo-write.sh` | Mirror todos → `.omg/todos/<session>.json` |
 | `Stop` | `stop-hook.sh` | Continuation chain (`lib/stop-chain.sh`) |
 | `SessionEnd` | `session-end.sh` | Reset session state |
 
@@ -21,7 +21,7 @@ Plugin manifest: **`hooks/hooks.json`** (loaded via `GROK_PLUGIN_ROOT`). **Do no
 1. `using-superpowers` (first prompt only)
 2. Ralph / ultrawork commands (`/ralph-loop`, `/cancel-ralph`, …)
 3. `/stop-continuation`, `/resume-continuation`
-4. Boulder context (`.grok/boulder.json`)
+4. Boulder context (`.omg/boulder.json`)
 5. Skill-gate reminder
 
 ## Stop (priority chain)
@@ -29,21 +29,23 @@ Plugin manifest: **`hooks/hooks.json`** (loaded via `GROK_PLUGIN_ROOT`). **Do no
 `lib/stop-chain.sh` — **first block wins**:
 
 1. **Ralph / ultrawork** — not affected by `/stop-continuation` (but `/stop-continuation` clears loop state)
-2. **Boulder** — `.grok/plans/*.md` progress
+2. **Boulder** — `.omg/plans/*.md` progress
 3. **Todo continuation** — incomplete `TodoWrite` items
 4. **plan.md** — root/session unchecked boxes (fallback)
 
 After `/stop-continuation`, steps 2–4 are skipped until `/resume-continuation` or `SessionEnd`.
 
-## Workspace state (`.grok/`)
+## Workspace state (`.omg/`)
 
 | Path | Purpose |
 |------|---------|
-| `.grok/boulder.json` | Active plan work (omo-compatible schema) |
-| `.grok/plans/*.md` | Prometheus-style plans |
-| `.grok/todos/<session>.json` | Todo mirror |
-| `.grok/run-continuation/<session>.json` | Pause marker (with `~/.grok/state/stop-continuation/`) |
-| `.grok/ralph-loop.local.md` | Ralph / ultrawork loop |
+| `.omg/boulder.json` | Active plan work (omo-compatible schema) |
+| `.omg/plans/*.md` | Prometheus-style plans |
+| `.omg/todos/<session>.json` | Todo mirror |
+| `.omg/run-continuation/<session>.json` | Pause marker (with `~/.grok/state/stop-continuation/`) |
+| `.omg/ralph-loop.local.md` | Ralph / ultrawork loop |
+
+Session hook state (skill catalog, stop-verify) stays under **`~/.grok/state/`** (Grok home).
 
 ## Plugin overlap
 

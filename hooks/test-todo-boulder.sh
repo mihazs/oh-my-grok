@@ -10,20 +10,20 @@ export GROK_SESSION_ID="test-todo-boulder-$$"
 tmpdir="$(mktemp -d)"
 export GROK_WORKSPACE_ROOT="$tmpdir"
 trap 'rm -rf "$tmpdir"' EXIT
-mkdir -p "$tmpdir/.grok/plans"
+mkdir -p "$tmpdir/.omg/plans"
 
 # Boulder state + plan
-cat >"${tmpdir}/.grok/plans/auth.md" <<'PLAN'
+cat >"${tmpdir}/.omg/plans/auth.md" <<'PLAN'
 ## TODOs
 - [ ] 1. Add login
 - [x] 2. Add logout
 PLAN
 
-cat >"${tmpdir}/.grok/boulder.json" <<JSON
+cat >"${tmpdir}/.omg/boulder.json" <<JSON
 {
   "schema_version": 2,
   "active_work_id": "auth-work",
-  "active_plan": ".grok/plans/auth.md",
+  "active_plan": ".omg/plans/auth.md",
   "plan_name": "auth",
   "status": "active",
   "started_at": "2026-06-02T10:00:00+00:00",
@@ -32,7 +32,7 @@ cat >"${tmpdir}/.grok/boulder.json" <<JSON
   "works": {
     "auth-work": {
       "work_id": "auth-work",
-      "active_plan": ".grok/plans/auth.md",
+      "active_plan": ".omg/plans/auth.md",
       "plan_name": "auth",
       "status": "active",
       "started_at": "2026-06-02T10:00:00+00:00",
@@ -69,7 +69,7 @@ rg -q 'BOULDER CONTINUATION' "${tmpdir}/boulder-block.json" || { cat "${tmpdir}/
 # Stop continuation pauses boulder
 printf '%s\n' '{"hookEventName":"UserPromptSubmit","sessionId":"'"$GROK_SESSION_ID"'","workspaceRoot":"'"$GROK_WORKSPACE_ROOT"'","prompt":"/stop-continuation"}' \
   | GROK_HOOK_EVENT=user_prompt_submit bash "${HOOKS_DIR}/run-hook.sh" user-prompt.sh >/dev/null
-test ! -f "${tmpdir}/.grok/boulder.json" || { echo "boulder should be cleared"; exit 1; }
+test ! -f "${tmpdir}/.omg/boulder.json" || { echo "boulder should be cleared"; exit 1; }
 
 # Resume continuation for todo-only test (paused boulder does not block)
 printf '%s\n' '{"hookEventName":"UserPromptSubmit","sessionId":"'"$GROK_SESSION_ID"'","workspaceRoot":"'"$GROK_WORKSPACE_ROOT"'","prompt":"/resume-continuation"}' \
@@ -82,6 +82,6 @@ rg -q 'TODO CONTINUATION' "${tmpdir}/todo-block.json" || { cat "${tmpdir}/todo-b
 # Mirror todos via post-tool hook
 printf '%s\n' '{"hookEventName":"PostToolUse","sessionId":"'"$GROK_SESSION_ID"'","workspaceRoot":"'"$GROK_WORKSPACE_ROOT"'"}' \
   | GROK_HOOK_EVENT=post_tool_use bash "${HOOKS_DIR}/run-hook.sh" post-tool-todo-write.sh >/dev/null
-test -f "${tmpdir}/.grok/todos/${GROK_SESSION_ID}.json" || { echo "todo mirror missing"; exit 1; }
+test -f "${tmpdir}/.omg/todos/${GROK_SESSION_ID}.json" || { echo "todo mirror missing"; exit 1; }
 
 echo "todo-boulder hooks: OK"

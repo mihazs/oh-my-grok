@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Mirror TodoWrite state to .grok/todos/<session>.json.
+# Mirror TodoWrite state to .omg/todos/<session>.json.
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=lib/common.sh

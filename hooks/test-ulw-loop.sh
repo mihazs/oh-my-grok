@@ -10,7 +10,7 @@ export GROK_SESSION_ID="test-ulw-$$"
 tmpdir="$(mktemp -d)"
 export GROK_WORKSPACE_ROOT="$tmpdir"
 trap 'rm -rf "$tmpdir"' EXIT
-mkdir -p "$tmpdir/.grok"
+mkdir -p "$tmpdir/.omg"
 
 # Start ultrawork
 printf '%s\n' '{"hookEventName":"UserPromptSubmit","sessionId":"'"$GROK_SESSION_ID"'","workspaceRoot":"'"$GROK_WORKSPACE_ROOT"'","prompt":"/ulw-loop \"ship feature\" --max-iterations=5"}' \
@@ -18,7 +18,7 @@ printf '%s\n' '{"hookEventName":"UserPromptSubmit","sessionId":"'"$GROK_SESSION_
   >"${tmpdir}/start.json"
 rg -q 'ULTRAWORK|VERIFIED|ultrawork' "${tmpdir}/start.json" \
   || { echo "ulw start failed:"; cat "${tmpdir}/start.json"; exit 1; }
-rg -q 'ultrawork: true' "${tmpdir}/.grok/ralph-loop.local.md" || { cat "${tmpdir}/.grok/ralph-loop.local.md"; exit 1; }
+rg -q 'ultrawork: true' "${tmpdir}/.omg/ralph-loop.local.md" || { cat "${tmpdir}/.omg/ralph-loop.local.md"; exit 1; }
 
 # Stop without promise -> block (ultrawork continuation)
 printf '%s\n' '{"hookEventName":"stop","sessionId":"'"$GROK_SESSION_ID"'","workspaceRoot":"'"$GROK_WORKSPACE_ROOT"'","stopReason":"end_turn","last_assistant_message":"wip"}' \
@@ -32,8 +32,8 @@ printf '%s\n' '{"hookEventName":"stop","sessionId":"'"$GROK_SESSION_ID"'","works
 rg -q '"decision":"block"' "${tmpdir}/verify.json" || { cat "${tmpdir}/verify.json"; exit 1; }
 rg -q 'VERIFICATION' "${tmpdir}/verify.json" || { cat "${tmpdir}/verify.json"; exit 1; }
 rg -q 'code-reviewer' "${tmpdir}/verify.json" || { cat "${tmpdir}/verify.json"; exit 1; }
-test -f "${tmpdir}/.grok/ralph-loop.local.md" || { echo "state cleared too early"; exit 1; }
-rg -q 'verification_pending: true' "${tmpdir}/.grok/ralph-loop.local.md" || { cat "${tmpdir}/.grok/ralph-loop.local.md"; exit 1; }
+test -f "${tmpdir}/.omg/ralph-loop.local.md" || { echo "state cleared too early"; exit 1; }
+rg -q 'verification_pending: true' "${tmpdir}/.omg/ralph-loop.local.md" || { cat "${tmpdir}/.omg/ralph-loop.local.md"; exit 1; }
 
 # VERIFIED without Agent: oracle -> still block
 printf '%s\n' '{"hookEventName":"stop","sessionId":"'"$GROK_SESSION_ID"'","workspaceRoot":"'"$GROK_WORKSPACE_ROOT"'","stopReason":"end_turn","last_assistant_message":"<promise>VERIFIED</promise>"}' \
@@ -45,7 +45,7 @@ rg -q 'VERIFICATION FAILED' "${tmpdir}/bad-verify.json" || { cat "${tmpdir}/bad-
 printf '%s\n' '{"hookEventName":"stop","sessionId":"'"$GROK_SESSION_ID"'","workspaceRoot":"'"$GROK_WORKSPACE_ROOT"'","stopReason":"end_turn","last_assistant_message":"Agent: oracle\n<promise>VERIFIED</promise>"}' \
   | GROK_HOOK_EVENT=stop bash "${HOOKS_DIR}/run-hook.sh" stop-hook.sh >"${tmpdir}/done.json"
 test "$(cat "${tmpdir}/done.json")" = "{}" || { echo "expected allow:"; cat "${tmpdir}/done.json"; exit 1; }
-test ! -f "${tmpdir}/.grok/ralph-loop.local.md" || { echo "state should be cleared"; exit 1; }
+test ! -f "${tmpdir}/.omg/ralph-loop.local.md" || { echo "state should be cleared"; exit 1; }
 
 # Bare ultrawork prefix
 printf '%s\n' '{"hookEventName":"UserPromptSubmit","sessionId":"'"$GROK_SESSION_ID"'","workspaceRoot":"'"$GROK_WORKSPACE_ROOT"'","prompt":"ultrawork fix lint in src"}' \

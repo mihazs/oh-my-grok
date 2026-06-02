@@ -9,12 +9,12 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-GROK_WORKSPACE_DIR = ".grok"
-BOULDER_DIR = GROK_WORKSPACE_DIR
+OMG_WORKSPACE_DIR = ".omg"
+BOULDER_DIR = OMG_WORKSPACE_DIR
 BOULDER_FILE = "boulder.json"
-CONTINUATION_MARKER_DIR = f"{GROK_WORKSPACE_DIR}/run-continuation"
-PROMETHEUS_PLANS_DIRS = (f"{GROK_WORKSPACE_DIR}/plans",)
-TODO_MIRROR_DIR = f"{GROK_WORKSPACE_DIR}/todos"
+CONTINUATION_MARKER_DIR = f"{OMG_WORKSPACE_DIR}/run-continuation"
+PROMETHEUS_PLANS_DIRS = (f"{OMG_WORKSPACE_DIR}/plans",)
+TODO_MIRROR_DIR = f"{OMG_WORKSPACE_DIR}/todos"
 
 TODO_CONTINUATION_PROMPT = """[TODO CONTINUATION]
 
@@ -32,7 +32,7 @@ You have an active work plan with incomplete tasks. Continue working.
 RULES:
 - FIRST: Read the plan file NOW. If the last completed task is still unchecked, mark it `- [x]` IMMEDIATELY before anything else
 - Proceed without asking for permission
-- Use the notepad at .grok/notepads/{plan_name}/ to record learnings
+- Use the notepad at .omg/notepads/{plan_name}/ to record learnings
 - Do not stop until all tasks are complete
 - If a task is blocked, edit the plan and change that checkbox from `- [ ]` to `- [~]` via a real file edit"""
 
@@ -132,7 +132,7 @@ def should_allow_stop(data: dict) -> bool:
     return False
 
 
-# --- continuation marker (.grok/run-continuation/<session>.json) ---
+# --- continuation marker (.omg/run-continuation/<session>.json) ---
 
 
 def marker_path(workspace: str, session_id: str) -> Path:

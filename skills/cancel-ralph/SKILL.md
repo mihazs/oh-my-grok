@@ -8,7 +8,7 @@ user_invocable: true
 
 # Cancel Ralph / Ultrawork Loop
 
-Clears `.grok/ralph-loop.local.md` (covers both `ralph-loop` and `ulw-loop`) and stops Stop-hook continuations.
+Clears `.omg/ralph-loop.local.md` (covers both `ralph-loop` and `ulw-loop`) and stops Stop-hook continuations.
 
 For todo + boulder auto-continue too, use `/stop-continuation` instead.
 

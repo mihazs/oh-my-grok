@@ -4,15 +4,15 @@
 
 Stop hook blocks with omo-style `[TODO CONTINUATION]` when `TodoWrite` todos are pending/in_progress.
 
-- Mirror: `.grok/todos/<sessionId>.json` (updated on each `TodoWrite`)
+- Mirror: `.omg/todos/<sessionId>.json` (updated on each `TodoWrite`)
 - Pause: `/stop-continuation`
 - Resume: `/resume-continuation`
 
 ## Boulder (`boulder.json`)
 
-Active work tracked at `.grok/boulder.json` (schema v2, omo-compatible fields).
+Active work tracked at `.omg/boulder.json` (schema v2, omo-compatible fields).
 
-- Plans: `.grok/plans/*.md` (structured `## TODOs` / `## Final Verification Wave` checkboxes)
+- Plans: `.omg/plans/*.md` (structured `## TODOs` / `## Final Verification Wave` checkboxes)
 - Stop hook: `[BOULDER CONTINUATION]` while plan incomplete; `BOULDER COMPLETE` nudge when all checked
 - Context injected each prompt when a session is registered in boulder state
 - `/stop-continuation` also clears boulder + Ralph loop

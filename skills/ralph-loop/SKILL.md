@@ -21,7 +21,7 @@ Or invoke this skill and state the task in the same message.
 
 ## Behavior (Grok hooks)
 
-1. `UserPromptSubmit` writes `.grok/ralph-loop.local.md` in the workspace and injects loop instructions.
+1. `UserPromptSubmit` writes `.omg/ralph-loop.local.md` in the workspace and injects loop instructions.
 2. You work until the task is **fully** complete.
 3. When done, output: `<promise>DONE</promise>` (or your custom `--completion-promise` text).
 4. If you stop without that tag, the **Stop** hook blocks exit and injects a continuation prompt (up to `max-iterations`, default 100).
@@ -41,7 +41,7 @@ For verified completion (Oracle subagent required), use **`ulw-loop`** instead:
 /ulw-loop "same task" [--max-iterations=500]
 ```
 
-See `~/.grok/skills/ulw-loop/SKILL.md`.
+See the oh-my-grok `ulw-loop` skill (`grok inspect` for path).
 
 ## Cancel
 
@@ -53,4 +53,4 @@ Or use the `cancel-ralph` skill. Also cancels an active ultrawork loop.
 
 ## State file
 
-Workspace-relative: `.grok/ralph-loop.local.md` (Grok-owned; omo uses `.omo/` separately).
+Workspace-relative: `.omg/ralph-loop.local.md` (oh-my-grok; omo uses `.omo/`).
