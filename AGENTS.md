@@ -70,7 +70,7 @@ Full event map and stop priority: **`hooks/README.md`** (read when touching Stop
 
 | Task | Read first |
 |------|------------|
-| Install / publish / repo URL | `README.md` |
+| Install / publish / repo URL | `README.md`, `docs/installation.md` |
 | Hook events, stop chain, `.omg/` layout | `hooks/README.md` |
 | Skill-gate behavior | `skills/agent-skill-gate/SKILL.md`, `rules/00-agent-skill-gate.md` |
 | Ralph / ultrawork | `skills/ralph-loop/SKILL.md`, `skills/ulw-loop/SKILL.md`, `rules/10-ralph-loop.md` |
@@ -120,6 +120,31 @@ Optional E2E: `bash hooks/test-inline-skill-gate.sh` (needs `grok` CLI + trusted
 | Stop continuation order | `hooks/lib/stop-chain.sh` only | Second Stop hook registration |
 
 Pair every **don’t** with a **do** in rules (e.g. don’t add global `~/.grok/hooks/*.json` → do install via `grok plugin install`).
+
+---
+
+## Plugin editing rules
+
+1. **One JSON context per event** — `user-prompt.sh` merges all `UserPromptSubmit` parts; never add a second manifest entry for the same event.
+2. **Stop order** — only change in `hooks/lib/stop-chain.sh`; update `hooks/README.md` + tests.
+3. **New slash command** — add `hooks/lib/<feature>.sh`, source from `user-prompt.sh`, add `skills/<name>/SKILL.md` with `user_invocable: true`, add `hooks/test-<feature>.sh`.
+4. **Workspace paths** — constants in `hooks/lib/omo_state.py`; never hardcode user home directories in tracked files.
+5. **Docs** — human guides in `docs/` and `README.md`; this file stays hook/skill oriented.
+
+Human docs: `docs/installation.md`, `docs/skills.md`, `docs/configuration.md`. Roadmap: `ROADMAP.md`.
+
+### Example: add a prompt hook fragment
+
+1. Create `hooks/lib/my-feature.sh` with `collect_user_prompt_my_feature()` returning context text.
+2. In `user-prompt.sh`: `source` the lib, call collector, pass into `emit_user_prompt_context`.
+3. Add `hooks/test-my-feature.sh` with `GROK_PLUGIN_ROOT` set and stdin JSON fixture.
+4. Document in `hooks/README.md` UserPromptSubmit list.
+
+### Example: add a user-invocable skill
+
+1. Add `skills/my-skill/SKILL.md` with frontmatter `name`, `description`, `user_invocable: true`.
+2. If the skill needs prompt injection, wire a collector in `user-prompt.sh` (pattern: `handoff.sh`, `ralph-loop.sh`).
+3. Run `grok plugin validate .` and hook smoke tests.
 
 ---
 

@@ -1,0 +1,41 @@
+name: Feature request
+description: New skill, hook behavior, or documentation
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        oh-my-grok complements [oh-my-openagent](https://github.com/code-yeongyu/oh-my-openagent) — Grok Build only.
+        See [ROADMAP.md](https://github.com/mihazs/oh-my-grok/blob/main/ROADMAP.md) for planned work.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Hook / Stop chain
+        - Skill / slash command
+        - Rules / prompt injection
+        - Documentation
+        - CI / release
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or use case
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+    validations:
+      required: true
+  - type: checkboxes
+    id: omo
+    attributes:
+      label: Relationship to oh-my-openagent
+      options:
+        - label: This is Grok-specific; should not be ported back to omo as-is
+          required: false

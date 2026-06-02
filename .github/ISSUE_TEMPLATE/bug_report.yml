@@ -1,0 +1,51 @@
+name: Bug report
+description: Hook, skill, or install issue
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. Check [docs/troubleshooting.md](https://github.com/mihazs/oh-my-grok/blob/main/docs/troubleshooting.md) first.
+  - type: input
+    id: grok_version
+    attributes:
+      label: Grok CLI version
+      description: Output of `grok --version` if available
+    validations:
+      required: false
+  - type: dropdown
+    id: install_method
+    attributes:
+      label: Install method
+      options:
+        - github:mihazs/oh-my-grok
+        - Local path / symlink
+        - Unknown
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: "1. Install plugin...\n2. Run /ralph-loop..."
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Hook output / errors
+      description: Redact paths and secrets
+    validations:
+      required: false

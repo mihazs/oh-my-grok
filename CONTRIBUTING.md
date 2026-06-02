@@ -1,5 +1,23 @@
 # Contributing
 
+Thank you for helping improve oh-my-grok.
+
+## Relationship to oh-my-openagent
+
+[oh-my-openagent](https://github.com/code-yeongyu/oh-my-openagent) (omo) is the upstream inspiration for Ralph loops, boulder/todos, handoff, and skill-gate patterns.
+
+**oh-my-grok complements omo — it does not replace it.**
+
+| | oh-my-grok | oh-my-openagent |
+|--|------------|-----------------|
+| Harness | Grok Build CLI | OpenCode, Codex, multi-harness |
+| Workspace state | `.omg/` | `.omo/` |
+| Install | `grok plugin install github:mihazs/oh-my-grok` | npm / bun installers |
+
+When porting behavior from omo, adapt paths and hooks for Grok’s plugin model. Do not copy OpenCode-specific assumptions into this repo.
+
+See [ROADMAP.md](ROADMAP.md) for planned work.
+
 ## Commits
 
 Use [Conventional Commits](https://www.conventionalcommits.org/) so release-please can pick the semver bump:
@@ -33,6 +51,7 @@ done
 ```
 
 3. Optional: `grok plugin validate .` (requires Grok CLI; not run in CI).
+4. Use the PR template checklist.
 
 Do **not** bump `plugin.json` version on feature PRs — release-please updates it in the Release PR.
 
@@ -40,4 +59,21 @@ Do **not** bump `plugin.json` version on feature PRs — release-please updates 
 
 On merge to `main`, [release-please](https://github.com/googleapis/release-please) opens or updates a **Release PR** with `CHANGELOG.md` and `plugin.json` changes. Merging that PR creates the `v*` tag and GitHub Release.
 
-See [README.md](README.md#releases) for install by tag.
+See [README.md](README.md#releases).
+
+## Maintainers (repo metadata)
+
+GitHub description and topics are not stored in git. After major positioning changes, update via:
+
+```bash
+gh repo edit mihazs/oh-my-grok \
+  --description "oh-my-grok: Productivity plugin for Grok Build CLI. Skill gate, Ralph/ultrawork loops, todo + boulder continuation, handoff skills, and unified Stop chain. Inspired by oh-my-openagent. Fills the early Grok Build plugin gap." \
+  --add-topic grok-build --add-topic grok-plugin --add-topic oh-my-grok \
+  --add-topic grok-cli --add-topic ai-coding-agent --add-topic agentic-coding \
+  --add-topic productivity-plugin --add-topic ralph-loop --add-topic multi-agent \
+  --add-topic xai-grok
+```
+
+## Agent contributors
+
+Implementation work: read [AGENTS.md](AGENTS.md) and [docs/installation.md](docs/installation.md), not the marketing README alone.
