@@ -10,4 +10,4 @@ Grok plugin — hooks, skills, and rules for agent skill gate + continuation loo
 
 ## Development
 
-Edit under `hooks/`, `skills/`, `rules/`. Run tests from `hooks/` with `GROK_PLUGIN_ROOT` set to repo root (see README).
+Edit under `hooks/`, `skills/`, `rules/`. Run tests from `hooks/` with `GROK_PLUGIN_ROOT` set to repo root (see README). Skills include `handoff` (`/handoff`, ported from omo).

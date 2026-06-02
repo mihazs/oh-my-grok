@@ -20,9 +20,10 @@ Plugin manifest: **`hooks/hooks.json`** (loaded via `GROK_PLUGIN_ROOT`). **Do no
 
 1. `using-superpowers` (first prompt only)
 2. Ralph / ultrawork commands (`/ralph-loop`, `/cancel-ralph`, …)
-3. `/stop-continuation`, `/resume-continuation`
-4. Boulder context (`.omg/boulder.json`)
-5. Skill-gate reminder
+3. `/handoff` — session handoff summary (handoff skill; omo port)
+4. `/stop-continuation`, `/resume-continuation`
+5. Boulder context (`.omg/boulder.json`)
+6. Skill-gate reminder
 
 ## Stop (priority chain)
 
@@ -44,6 +45,7 @@ After `/stop-continuation`, steps 2–4 are skipped until `/resume-continuation`
 | `.omg/todos/<session>.json` | Todo mirror |
 | `.omg/run-continuation/<session>.json` | Pause marker (with `~/.grok/state/stop-continuation/`) |
 | `.omg/ralph-loop.local.md` | Ralph / ultrawork loop |
+| `.omg/handoffs/*.md` | Saved handoff summaries |
 
 Session hook state (skill catalog, stop-verify) stays under **`~/.grok/state/`** (Grok home).
 
@@ -62,4 +64,5 @@ bash hooks/test-ralph-loop.sh
 bash hooks/test-ulw-loop.sh
 bash hooks/test-todo-boulder.sh
 bash hooks/test-using-superpowers-first-prompt.sh
+bash hooks/test-handoff.sh
 ```

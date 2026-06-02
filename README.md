@@ -44,7 +44,7 @@ oh-my-grok/
   plugin.json
   hooks/hooks.json      # manifest (uses ${GROK_PLUGIN_ROOT})
   hooks/lib/            # ralph, boulder, stop-chain, common
-  skills/               # agent-skill-gate, ralph-loop, ulw-loop, cancel-ralph
+  skills/               # agent-skill-gate, ralph-loop, ulw-loop, cancel-ralph, handoff
   rules/                # injected via skill-gate context
 ```
 
@@ -59,6 +59,7 @@ See [hooks/README.md](hooks/README.md) for event map and stop priority.
 | `/cancel-ralph` | Clear loop state |
 | `/stop-continuation` | Pause auto-continue; clear loop + boulder |
 | `/resume-continuation` | Resume auto-continue |
+| `/handoff` | Structured HANDOFF CONTEXT for a new session |
 
 ## Develop
 
@@ -71,6 +72,7 @@ bash hooks/test-ulw-loop.sh
 bash hooks/test-todo-boulder.sh
 bash hooks/test-stop-verify.sh
 bash hooks/test-using-superpowers-first-prompt.sh
+bash hooks/test-handoff.sh
 ```
 
 After editing hooks, run `grok plugin update oh-my-grok` (or reinstall from your path) and start a new session if hooks do not reload.
