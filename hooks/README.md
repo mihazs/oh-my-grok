@@ -19,11 +19,12 @@ Plugin manifest: **`hooks/hooks.json`** (loaded via `GROK_PLUGIN_ROOT`). **Do no
 **`user-prompt.sh`** collects and emits a single JSON payload:
 
 1. `using-superpowers` (first prompt only)
-2. Ralph / ultrawork commands (`/ralph-loop`, `/cancel-ralph`, …)
-3. `/handoff` — session handoff summary (handoff skill; omo port)
-4. `/stop-continuation`, `/resume-continuation`
-5. Boulder context (`.omg/boulder.json`)
-6. Skill-gate reminder
+2. Workspace `AGENTS.md` + plugin `rules/*.md` (every prompt; size-capped)
+3. Ralph / ultrawork commands (`/ralph-loop`, `/cancel-ralph`, …)
+4. `/handoff` — session handoff summary (handoff skill; omo port)
+5. `/stop-continuation`, `/resume-continuation`
+6. Boulder context (`.omg/boulder.json`)
+7. Skill-gate reminder
 
 ## Stop (priority chain)
 

@@ -32,7 +32,7 @@ hooks/lib/
   todo-boulder.sh         → boulder + todo continuation
   omo_state.py            → .omg paths, boulder.json, plan progress
 skills/*/SKILL.md         → user-invocable workflows (discovered by grok inspect)
-rules/*.md                → injected via skill-gate SessionStart context
+rules/*.md                → injected on every UserPromptSubmit (with workspace AGENTS.md)
 ```
 
 **superpowers** may also register `SessionStart`; both can run. Do not register duplicate oh-my-grok hooks globally.
@@ -98,6 +98,7 @@ bash hooks/test-todo-boulder.sh
 bash hooks/test-stop-verify.sh
 bash hooks/test-using-superpowers-first-prompt.sh
 bash hooks/test-handoff.sh
+bash hooks/test-workspace-context.sh
 ```
 
 4. Refresh install: `grok plugin update oh-my-grok` (or `grok plugin install "$(pwd)" --trust`).
