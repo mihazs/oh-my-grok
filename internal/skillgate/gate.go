@@ -11,8 +11,10 @@ import (
 )
 
 type catalogEntry struct {
-	ID   string `json:"id"`
-	Path string `json:"path"`
+	ID          string `json:"id"`
+	Path        string `json:"path"`
+	Scope       string `json:"scope,omitempty"`
+	Description string `json:"description,omitempty"`
 }
 
 // SessionDir returns ~/.grok/state/skill-gate/<session>.

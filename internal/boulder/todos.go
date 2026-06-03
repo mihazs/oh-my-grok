@@ -44,6 +44,11 @@ func ShouldAllowStop(stopReason string, stopHookActive bool, backgroundTasks []m
 	return false
 }
 
+// FindSessionDir locates the Grok session resources directory.
+func FindSessionDir(sessionID string) string {
+	return findSessionDir(sessionID)
+}
+
 func findSessionDir(sessionID string) string {
 	root := filepath.Join(hookenv.GrokHome(), "sessions")
 	entries, err := os.ReadDir(root)
@@ -60,6 +65,11 @@ func findSessionDir(sessionID string) string {
 		}
 	}
 	return ""
+}
+
+// TodosFromResources reads todos from resources_state.json.
+func TodosFromResources(sessionDir string) []map[string]any {
+	return todosFromResources(sessionDir)
 }
 
 func todosFromResources(sessionDir string) []map[string]any {

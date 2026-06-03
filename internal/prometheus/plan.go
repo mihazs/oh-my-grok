@@ -5,13 +5,13 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/mihazs/oh-my-grok/internal/config"
 	"github.com/mihazs/oh-my-grok/internal/hookenv"
 )
 
 // PlanModeActive reports whether Prometheus plan mode is enabled.
 func PlanModeActive(sessionID string) bool {
-	switch strings.ToLower(strings.TrimSpace(os.Getenv("OMG_PLAN_MODE"))) {
-	case "1", "true", "yes", "on":
+	if config.PlanModeForced() {
 		return true
 	}
 	if sessionID == "" {

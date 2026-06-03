@@ -14,8 +14,12 @@ func NewRoot() *cobra.Command {
 	root := &cobra.Command{Use: "omg-hook"}
 	root.AddCommand(
 		sessionStartCmd(),
+		sessionEndCmd(),
+		userPromptCmd(),
 		preToolUseCmd(),
 		postToolReadCmd(),
+		postToolTodoWriteCmd(),
+		postToolLSPCmd(),
 		stopCmd(),
 	)
 	return root

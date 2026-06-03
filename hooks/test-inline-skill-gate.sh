@@ -4,8 +4,8 @@ set -euo pipefail
 
 GROK="${GROK_BIN:-${HOME}/.grok/bin/grok}"
 HOOKS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# shellcheck source=lib/common.sh
-source "${HOOKS_DIR}/lib/common.sh"
+# shellcheck source=test-support.sh
+source "${HOOKS_DIR}/test-support.sh"
 META_SKILL="${META_SKILL_PATH:-${HOOKS_DIR}/../skills/agent-skill-gate/SKILL.md}"
 WORKSPACE="${1:-${GROK_WORKSPACE_ROOT:-$(pwd)}}"
 TEST_FILE="${TMPDIR:-/tmp}/grok-skill-gate-inline-test-$$.txt"
@@ -21,10 +21,10 @@ import json, sys
 d = json.load(sys.stdin)
 hooks = d.get('hooks', [])
 targets = [h.get('target', '') for h in hooks]
-if any('pre-tool-mutate.sh' in t for t in targets):
+if any('pre-tool-use' in t for t in targets):
     print('OK: PreToolUse skill-gate hook registered (%d hooks)' % len(hooks))
 else:
-    print('FAIL: pre-tool-mutate.sh not in inspect hooks')
+    print('FAIL: pre-tool-use not in inspect hooks')
     for h in hooks:
         print(' -', h.get('event'), h.get('target'))
     sys.exit(1)

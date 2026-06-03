@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 HOOKS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# shellcheck source=lib/common.sh
-source "${HOOKS_DIR}/lib/common.sh"
+# shellcheck source=test-support.sh
+source "${HOOKS_DIR}/test-support.sh"
 
 export GROK_HOME="${GROK_HOME:-$(resolve_grok_home)}"
 export GROK_SESSION_ID="test-workspace-context-$$"
@@ -20,7 +20,7 @@ export GROK_WORKSPACE_ROOT="$ws"
 payload='{"hookEventName":"UserPromptSubmit","sessionId":"'"$GROK_SESSION_ID"'","cwd":"'"$ws"'","workspaceRoot":"'"$ws"'","prompt":"continue work"}'
 
 printf '%s\n' "$payload" \
-  | GROK_HOOK_EVENT=user_prompt_submit bash "${HOOKS_DIR}/run-hook.sh" user-prompt.sh \
+  | GROK_HOOK_EVENT=user_prompt_submit bash "${HOOKS_DIR}/run-hook.sh" user-prompt \
   >"${tmpdir}/out.json"
 
 rg -q 'WORKSPACE_AGENTS' "${tmpdir}/out.json" \
@@ -34,7 +34,7 @@ rg -q 'agent-skill-gate' "${tmpdir}/out.json" \
 
 # Second prompt still injects workspace context (not first-prompt-only)
 printf '%s\n' "$payload" \
-  | GROK_HOOK_EVENT=user_prompt_submit bash "${HOOKS_DIR}/run-hook.sh" user-prompt.sh \
+  | GROK_HOOK_EVENT=user_prompt_submit bash "${HOOKS_DIR}/run-hook.sh" user-prompt \
   >"${tmpdir}/out2.json"
 rg -q 'WORKSPACE_AGENTS' "${tmpdir}/out2.json" \
   || { echo "second prompt: expected WORKSPACE_AGENTS"; cat "${tmpdir}/out2.json"; exit 1; }

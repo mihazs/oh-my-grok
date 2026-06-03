@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 HOOKS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# shellcheck source=lib/common.sh
-source "${HOOKS_DIR}/lib/common.sh"
+# shellcheck source=test-support.sh
+source "${HOOKS_DIR}/test-support.sh"
 
 export GROK_HOME="${GROK_HOME:-$(resolve_grok_home)}"
 export GROK_SESSION_ID="test-using-superpowers-$$"
@@ -15,14 +15,14 @@ payload='{"hookEventName":"UserPromptSubmit","sessionId":"'"$GROK_SESSION_ID"'",
 
 # First prompt: must inject using-superpowers
 printf '%s\n' "$payload" \
-  | GROK_HOOK_EVENT=user_prompt_submit bash "${HOOKS_DIR}/run-hook.sh" user-prompt.sh \
+  | GROK_HOOK_EVENT=user_prompt_submit bash "${HOOKS_DIR}/run-hook.sh" user-prompt \
   >"${tmpdir}/first.json"
 rg -q 'USING_SUPERPOWERS_FIRST_PROMPT|using-superpowers' "${tmpdir}/first.json" \
   || { echo "first prompt: expected skill injection"; cat "${tmpdir}/first.json"; exit 1; }
 
 # Second prompt: no using-superpowers block (skill-gate reminder is OK)
 printf '%s\n' "$payload" \
-  | GROK_HOOK_EVENT=user_prompt_submit bash "${HOOKS_DIR}/run-hook.sh" user-prompt.sh \
+  | GROK_HOOK_EVENT=user_prompt_submit bash "${HOOKS_DIR}/run-hook.sh" user-prompt \
   >"${tmpdir}/second.json"
 rg -q 'USING_SUPERPOWERS_FIRST_PROMPT' "${tmpdir}/second.json" 2>/dev/null && {
   echo "second prompt: must not re-inject using-superpowers:"

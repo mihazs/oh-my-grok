@@ -163,6 +163,11 @@ func clearState(path string) {
 	_ = os.Remove(path)
 }
 
+// ClearState removes the ralph loop state file.
+func ClearState(path string) {
+	clearState(path)
+}
+
 func hasPromise(text, promise string) bool {
 	if text == "" || promise == "" {
 		return false

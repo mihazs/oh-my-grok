@@ -8,6 +8,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/mihazs/oh-my-grok/internal/config"
 	"github.com/mihazs/oh-my-grok/internal/hookenv"
 )
 
@@ -23,7 +24,7 @@ func StashPath(sessionID string) string {
 
 // EnforceEnabled reports whether LSP stop enforcement is on (OMG_LSP_ENFORCE, default on).
 func EnforceEnabled() bool {
-	return os.Getenv("OMG_LSP_ENFORCE") != "0"
+	return config.LSPEnforceEnabled()
 }
 
 type stashFile struct {
