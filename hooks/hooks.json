@@ -43,6 +43,16 @@
             "timeout": 10
           }
         ]
+      },
+      {
+        "matcher": "Write|StrReplace",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${GROK_PLUGIN_ROOT}/hooks/run-hook.sh\" post-tool-lsp.sh",
+            "timeout": 60
+          }
+        ]
       }
     ],
     "PreToolUse": [

@@ -10,6 +10,8 @@ source "${SCRIPT_DIR}/lib/ralph-loop.sh"
 source "${SCRIPT_DIR}/lib/todo-boulder.sh"
 # shellcheck source=lib/stop-pending.sh
 source "${SCRIPT_DIR}/lib/stop-pending.sh"
+# shellcheck source=lib/lsp.sh
+source "${SCRIPT_DIR}/lib/lsp.sh"
 # shellcheck source=lib/stop-chain.sh
 source "${SCRIPT_DIR}/lib/stop-chain.sh"
 

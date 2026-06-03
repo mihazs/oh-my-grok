@@ -18,6 +18,8 @@ source "${SCRIPT_DIR}/lib/todo-boulder.sh"
 source "${SCRIPT_DIR}/lib/handoff.sh"
 # shellcheck source=lib/workspace-context.sh
 source "${SCRIPT_DIR}/lib/workspace-context.sh"
+# shellcheck source=lib/lsp.sh
+source "${SCRIPT_DIR}/lib/lsp.sh"
 
 stdin_tmp="$(mktemp)"
 trap 'rm -f "$stdin_tmp"' EXIT
@@ -33,6 +35,7 @@ part_prometheus=""
 part_handoff=""
 part_stop=""
 part_boulder=""
+part_lsp=""
 part_gate=""
 
 part_super="$(collect_using_superpowers_on_first_prompt 2>/dev/null || true)"
@@ -43,6 +46,7 @@ part_prometheus="$(collect_user_prompt_prometheus "$stdin_tmp" 2>/dev/null || tr
 part_handoff="$(collect_user_prompt_handoff "$stdin_tmp" 2>/dev/null || true)"
 part_stop="$(collect_stop_continuation_prompt "$stdin_tmp" 2>/dev/null || true)"
 part_boulder="$(collect_boulder_prompt_context 2>/dev/null || true)"
+part_lsp="$(collect_lsp_context 2>/dev/null || true)"
 part_gate="$(build_prompt_reminder 2>/dev/null || true)"
 
 emit_user_prompt_context \
@@ -54,4 +58,5 @@ emit_user_prompt_context \
   "$part_handoff" \
   "$part_stop" \
   "$part_boulder" \
+  "$part_lsp" \
   "$part_gate"
