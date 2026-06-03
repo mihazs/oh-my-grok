@@ -1,0 +1,111 @@
+# https://taskfile.dev — run `task --list` for targets.
+# Uses existing scripts under scripts/; does not add new shell scripts.
+version: "3"
+
+vars:
+  ROOT_DIR: "{{.TASKFILE_DIR}}"
+  GOFLAGS: "-mod=mod"
+
+env:
+  GROK_PLUGIN_ROOT: "{{.ROOT_DIR}}"
+  GOFLAGS: "{{.GOFLAGS}}"
+
+tasks:
+  default:
+    desc: Full local verification (Go tests, hook smokes, plugin validate)
+    cmds:
+      - task: test:go
+      - task: test:hooks
+      - task: validate
+
+  check:
+    desc: Alias for default
+    cmds:
+      - task: default
+
+  ci:
+    desc: CI parity (JSON check, rebuild hooks, Go tests, hook smokes)
+    cmds:
+      - task: validate:json
+      - task: build:hooks
+      - task: test:go
+      - task: test:hooks
+
+  test:go:
+    desc: Go unit tests (hookio, hashline, prometheus, boulder, …)
+    cmds:
+      - go test ./... -count=1
+
+  test:hooks:
+    desc: All hook integration smoke tests (skips inline E2E and test-support)
+    cmds:
+      - |
+        set -euo pipefail
+        for t in hooks/test-*.sh; do
+          case "$(basename "$t")" in
+            test-inline-skill-gate.sh|test-support.sh) continue ;;
+          esac
+          echo "== $t =="
+          bash "$t"
+        done
+
+  test:hook:
+    desc: "Single hook test — task test:hook HOOK=ralph-loop"
+    requires:
+      vars: [HOOK]
+    cmds:
+      - bash hooks/test-{{.HOOK}}.sh
+
+  test:e2e:
+    desc: Inline skill-gate E2E (requires grok CLI + trusted workspace)
+    cmds:
+      - bash hooks/test-inline-skill-gate.sh
+
+  build:hooks:
+    desc: Cross-compile bin/omg-hook-* (linux/darwin/windows)
+    cmds:
+      - bash scripts/build-hook.sh
+
+  build:mcp:
+    desc: Build ast-grep and LSP MCP vendor dist/
+    cmds:
+      - bash scripts/build-mcp-runtimes.sh
+
+  validate:
+    desc: grok plugin validate (requires Grok CLI)
+    cmds:
+      - grok plugin validate .
+
+  validate:json:
+    desc: Syntax-check plugin.json
+    cmds:
+      - python3 -m json.tool plugin.json >/dev/null
+
+  dev:install:
+    desc: Install this repo as a trusted local plugin
+    cmds:
+      - grok plugin install "{{.ROOT_DIR}}" --trust
+
+  dev:update:
+    desc: Refresh installed oh-my-grok from registry or path
+    cmds:
+      - grok plugin update oh-my-grok
+
+  dev:env:
+    desc: Print exports for manual shells (eval "$(task dev:env --silent)")
+    silent: true
+    cmds:
+      - printf 'export GROK_PLUGIN_ROOT=%q\nexport GOFLAGS=%q\n' "{{.ROOT_DIR}}" "{{.GOFLAGS}}"
+
+  release:
+    desc: "Manual release — task release VERSION=0.2.0"
+    requires:
+      vars: [VERSION]
+    cmds:
+      - bash scripts/manual-release.sh "{{.VERSION}}"
+
+  clean:global-hooks:
+    desc: Remove deprecated ~/.grok/hooks overlays, then reinstall plugin
+    cmds:
+      - bash scripts/remove-global-overlays.sh
+      - task: dev:install
