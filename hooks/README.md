@@ -2,49 +2,55 @@
 
 Plugin manifest: **`hooks/hooks.json`** (loaded via `GROK_PLUGIN_ROOT`). **Do not** add parallel `~/.grok/hooks/*.json` for this stack — use `grok plugin install github:mihazs/oh-my-grok --trust` (or `$(pwd)` from a local clone).
 
+## Runtime
+
+Hooks run as a **single Go binary** per OS/arch: `bin/omg-hook-<platform>`. [`run-hook.sh`](run-hook.sh) selects the binary and passes a subcommand (`session-start`, `user-prompt`, `pre-tool-use`, …). Rebuild with `scripts/build-hook.sh` (requires Go 1.22+). End users need **no** Python or Go installed.
+
+Optional: **`grok`** CLI for `grok inspect` (skill catalog on SessionStart); **`node`** for LSP diagnostics post-edit (bundled MCP under `vendor/`).
+
 ## Event map
 
-| Event | Script | Role |
-|-------|--------|------|
-| `SessionStart` | `session-start.sh` | Skill catalog + skill-gate rules |
-| `UserPromptSubmit` | **`user-prompt.sh`** | **One** merged `additionalContext` (see below) |
-| `PreToolUse` | `pre-tool-mutate.sh` | Block writes until a skill is Read |
-| `PostToolUse` (Read) | `post-tool-read.sh` | Skill gate + hashline read cache |
-| `PostToolUse` (TodoWrite) | `post-tool-todo-write.sh` | Mirror todos → `.omg/todos/<session>.json` |
-| `PostToolUse` (Write\|StrReplace) | `post-tool-lsp.sh` | LSP diagnostics → `~/.grok/state/lsp-diagnostics/<session>.json` |
-| `Stop` | `stop-hook.sh` | Continuation chain (`lib/stop-chain.sh`) |
-| `SessionEnd` | `session-end.sh` | Reset session state |
+| Event | Subcommand | Role |
+|-------|------------|------|
+| `SessionStart` | `session-start` | Reset session state, refresh skill catalog, skill-gate banner |
+| `UserPromptSubmit` | **`user-prompt`** | **One** merged `additionalContext` (see below) |
+| `PreToolUse` | `pre-tool-use` | Prometheus plan-mode → hashline → skill gate |
+| `PostToolUse` (Read) | `post-tool-read` | Hashline cache + mark SKILL.md loaded |
+| `PostToolUse` (TodoWrite) | `post-tool-todo-write` | Mirror todos → `.omg/todos/<session>.json` |
+| `PostToolUse` (Write\|StrReplace) | `post-tool-lsp` | LSP diagnostics → `~/.grok/state/lsp-diagnostics/<session>.json` |
+| `Stop` | `stop` | Continuation chain (ralph → boulder → todo → lsp → plan.md) |
+| `SessionEnd` | `session-end` | Reset session state |
 
 ## UserPromptSubmit (merged)
 
-**`user-prompt.sh`** collects and emits a single JSON payload:
+**`user-prompt`** collects and emits a single JSON payload:
 
 1. `using-superpowers` (first prompt only)
 2. Workspace `AGENTS.md` + plugin `rules/*.md` (every prompt; size-capped)
-3. Ralph / ultrawork (`lib/ralph-loop.sh`)
-4. **IntentGate** (`lib/intent-gate.sh`) — search / analyze / team / hyperplan banners (`OMG_INTENT_GATE`)
-5. **Prometheus** (`lib/prometheus.sh`) — `/plan`, `/start-work`, plan-mode state
+3. Ralph / ultrawork
+4. **IntentGate** — search / analyze / team / hyperplan banners (`OMG_INTENT_GATE`)
+5. **Prometheus** — `/plan`, `/start-work`, plan-mode state
 6. `/handoff`, `/stop-continuation`, `/resume-continuation`
 7. Boulder context (`.omg/boulder.json`)
-8. **LSP** (`lib/lsp.sh`) — `<LSP_DIAGNOSTICS>` from session stash
-9. **Hashline** (`lib/hashline.sh`) — `<HASHLINE_CACHE>` for recently read files
+8. **LSP** — `<LSP_DIAGNOSTICS>` from session stash
+9. **Hashline** — `<HASHLINE_CACHE>` for recently read files
 10. Skill-gate reminder
 
 ## Stop (priority chain)
 
-`lib/stop-chain.sh` — **first block wins**:
+**First block wins** (see `internal/cmd/stop.go`):
 
 1. **Ralph / ultrawork** — not affected by `/stop-continuation` (but `/stop-continuation` clears loop state)
 2. **Boulder** — `.omg/plans/*.md` progress
 3. **Todo continuation** — incomplete `TodoWrite` items (**todo enforcer**: 5s cooldown, 3s abort window on non-`end_turn` stops; state in `~/.grok/state/todo-enforcer/<session>/state.json`)
-4. **LSP** — error diagnostics in stash (`lib/lsp.sh`; skip when `OMG_LSP_ENFORCE=0`)
+4. **LSP** — error diagnostics in stash (skip when `OMG_LSP_ENFORCE=0`)
 5. **plan.md** — root/session unchecked boxes (fallback)
 
 Grok fires **`Stop`** (not Claude Code’s `session.idle`).
 
 After `/stop-continuation`, steps 2–5 are skipped until `/resume-continuation` or `SessionEnd`.
 
-**PreToolUse** (`pre-tool-mutate.sh`): prometheus plan-mode deny → hashline stale `LINE#ID` deny → skill gate.
+**PreToolUse** (`pre-tool-use`): prometheus plan-mode deny → hashline stale `LINE#ID` deny → skill gate.
 
 ## Workspace state (`.omg/`)
 
