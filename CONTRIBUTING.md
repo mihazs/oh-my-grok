@@ -40,18 +40,27 @@ docs: document release workflow in README
 ## Pull requests
 
 1. Branch from `main`.
-2. Run hook tests locally (CI runs the same set):
+2. Rebuild hook binaries after Go changes:
+
+```bash
+bash scripts/build-hook.sh
+GOFLAGS=-mod=mod go test ./... -count=1
+```
+
+3. Run hook smoke tests locally (CI runs the same set):
 
 ```bash
 export GROK_PLUGIN_ROOT="$(pwd)"
 for t in hooks/test-*.sh; do
-  case "$(basename "$t")" in test-inline-skill-gate.sh) continue ;; esac
+  case "$(basename "$t")" in test-inline-skill-gate.sh|test-support.sh) continue ;; esac
   bash "$t"
 done
 ```
 
-3. Optional: `grok plugin validate .` (requires Grok CLI; not run in CI).
-4. Use the PR template checklist.
+Committed `bin/omg-hook-*` total ~30MB across five platforms (linux/darwin amd64+arm64, windows amd64).
+
+4. Optional: `grok plugin validate .` (requires Grok CLI; not run in CI).
+5. Use the PR template checklist.
 
 Do **not** bump `plugin.json` version on feature PRs — release-please updates it in the Release PR.
 

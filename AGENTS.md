@@ -11,7 +11,7 @@ Inspired by [oh-my-openagent](https://github.com/code-yeongyu/oh-my-openagent). 
 | Is | Is not |
 |----|--------|
 | A **Grok plugin** (`plugin.json`, `hooks/hooks.json`, bundled skills/rules) | A standalone CLI or application users run from this repo |
-| Hook shell + Python under `hooks/` | User application code |
+| Go hook binary (`bin/omg-hook-*`) + thin `hooks/run-hook.sh` | User application code |
 | Install target: `grok plugin install github:mihazs/oh-my-grok --trust` | Global copies under `~/.grok/hooks/` (deprecated; plugin-only) |
 
 After install, Grok loads hooks from `GROK_PLUGIN_ROOT` (installed copy under `~/.grok/installed-plugins/oh-my-grok-*`, often symlinked to a local clone).
@@ -23,18 +23,17 @@ After install, Grok loads hooks from `GROK_PLUGIN_ROOT` (installed copy under `~
 ```
 plugin.json
 hooks/hooks.json          → SessionStart, UserPromptSubmit, Pre/PostToolUse, Stop, SessionEnd
-hooks/user-prompt.sh      → single merged additionalContext (do not split into multiple JSON hooks)
-hooks/stop-hook.sh        → lib/stop-chain.sh (first block wins)
-hooks/lib/
-  common.sh               → GROK_HOME, PLUGIN_ROOT, skill catalog, session state
-  intent-gate.sh          → keyword modes (IntentGate)
-  prometheus.sh           → /plan, plan-mode PreToolUse guard
-  hashline.sh + hashline.py → read cache, LINE#ID PreToolUse guard
-  lsp.sh                  → diagnostics stash, post-tool + Stop
-  ralph-loop.sh           → /ralph-loop, /ulw-loop, /cancel-ralph
-  handoff.sh              → /handoff
-  todo-boulder.sh         → boulder + todo continuation (+ todo enforcer in omo_state.py)
-  omo_state.py            → .omg paths, boulder.json, plan progress, todo-enforcer state
+hooks/run-hook.sh         → dispatches to bin/omg-hook-<os>-<arch>
+cmd/omg-hook + internal/  → all hook logic (see docs/superpowers/plans/2026-06-02-go-hooks-migration.md)
+  cmd/user_prompt.go      → single merged additionalContext (do not split into multiple JSON hooks)
+  cmd/stop.go             → ralph → boulder → todo → lsp → plan.md (first block wins)
+  internal/skillgate/     → catalog, PreTool gate, reminders
+  internal/intentgate/    → keyword modes
+  internal/prometheus/    → /plan, plan-mode PreTool guard
+  internal/hashline/      → read cache, LINE#ID PreTool guard
+  internal/lsp/           → diagnostics stash, post-tool + Stop
+  internal/ralph/         → /ralph-loop, /ulw-loop, /cancel-ralph
+  internal/boulder/       → boulder + todo continuation + todo enforcer state
 skills/*/SKILL.md         → user-invocable workflows (discovered by grok inspect)
 rules/*.md                → injected on every UserPromptSubmit (with workspace AGENTS.md)
 ```
@@ -58,15 +57,15 @@ Analogous to omo’s **`.omo/`** in OpenCode workspaces. Never store plugin sour
 
 | Skill | Command | Hook involvement |
 |-------|---------|------------------|
-| `agent-skill-gate` | (meta; Read before mutating) | `session-start.sh`, `user-prompt.sh`, `pre-tool-mutate.sh`, `post-tool-read.sh` |
-| `ralph-loop` | `/ralph-loop "task"` | `user-prompt.sh`, `stop-hook.sh` |
+| `agent-skill-gate` | (meta; Read before mutating) | `session-start`, `user-prompt`, `pre-tool-use`, `post-tool-read` |
+| `ralph-loop` | `/ralph-loop "task"` | `user-prompt`, `stop` |
 | `ulw-loop` | `/ulw-loop "task"` | same + Oracle verification pending |
 | `cancel-ralph` | `/cancel-ralph` | clears `.omg/ralph-loop.local.md` |
-| `handoff` | `/handoff` | `handoff.sh` injects PHASE 0–4 instructions |
-| `prometheus-plan` | `/plan`, `/prometheus` | `prometheus.sh` + `pre-tool-mutate.sh` |
-| `hashline-edit` | (workflow) | `hashline.sh`, `post-tool-read.sh` |
+| `handoff` | `/handoff` | `user-prompt` injects PHASE 0–4 instructions |
+| `prometheus-plan` | `/plan`, `/prometheus` | `user-prompt` + `pre-tool-use` |
+| `hashline-edit` | (workflow) | `hashline` package, `post-tool-read` |
 | `ast-grep` | MCP tools | `.mcp.json` + `vendor/ast-grep-mcp` |
-| `lsp` | MCP + hook stash | `lsp.sh`, `post-tool-lsp.sh`, Stop step 4 |
+| `lsp` | MCP + hook stash | `post-tool-lsp`, Stop step 4 (optional `node`) |
 
 User-facing pause/resume: `/stop-continuation`, `/resume-continuation` (see `rules/12-todo-boulder.md`).
 
@@ -82,7 +81,7 @@ Full event map and stop priority: **`hooks/README.md`** (read when touching Stop
 | Hook events, stop chain, `.omg/` layout | `hooks/README.md` |
 | Skill-gate behavior | `skills/agent-skill-gate/SKILL.md`, `rules/00-agent-skill-gate.md` |
 | Ralph / ultrawork | `skills/ralph-loop/SKILL.md`, `skills/ulw-loop/SKILL.md`, `rules/10-ralph-loop.md` |
-| Boulder + todos | `rules/12-todo-boulder.md`, `hooks/lib/omo_state.py` |
+| Boulder + todos | `rules/12-todo-boulder.md`, `internal/boulder/` |
 | Handoff format | `skills/handoff/SKILL.md`, `rules/11-handoff.md` |
 | IntentGate / Prometheus / hashline / LSP | `hooks/lib/{intent-gate,prometheus,hashline,lsp}.sh`, `docs/configuration.md` |
 | ast-grep MCP build | `scripts/build-mcp-runtimes.sh`, `vendor/ast-grep-mcp/` |
@@ -130,14 +129,14 @@ Optional E2E: `bash hooks/test-inline-skill-gate.sh` (needs `grok` CLI + trusted
 | New lifecycle hook event | `hooks/hooks.json` + new script under `hooks/` | Duplicate manifest under `~/.grok/hooks/` |
 | Agent-facing workflow / phases | `skills/<name>/SKILL.md` | Long prose only in `rules/` without a skill |
 | Always-on Composer rules | `rules/*.md` (keep short) | 30+ “don’t” lines without “do” alternatives |
-| Workspace file paths (boulder, todos) | `hooks/lib/omo_state.py` constants + docs | Hardcoded `/home/...` paths anywhere in repo |
+| Workspace file paths (boulder, todos) | `internal/boulder/` constants + docs | Hardcoded `/home/...` paths anywhere in repo |
 | Stop continuation order | `hooks/lib/stop-chain.sh` only | Second Stop hook registration |
 | IntentGate keyword modes | `hooks/lib/intent-gate.sh`, `rules/13-intent-gate.md` | Duplicate mode logic in `user-prompt.sh` |
 | Prometheus plan mode | `hooks/lib/prometheus.sh`, `skills/prometheus-plan/` | Allow non-`.omg` writes while plan mode active |
 | Hashline LINE#ID guard | `hooks/lib/hashline.sh`, `hashline.py`, `post-tool-read.sh` | Second PreToolUse hook in `hooks.json` |
 | LSP stash + Stop block | `hooks/lib/lsp.sh`, `post-tool-lsp.sh` | Inline LSP calls in `stop-hook.sh` |
 | ast-grep / lsp MCP dist | `scripts/build-mcp-runtimes.sh`, `vendor/*` | Commit `node_modules` (run build script) |
-| Todo enforcer cooldown | `hooks/lib/omo_state.py`, `todo-boulder.sh` | Ad-hoc sleep in `stop-hook.sh` |
+| Todo enforcer cooldown | `internal/boulder/todos.go`, `internal/cmd/stop.go` | Ad-hoc sleep in stop handler |
 | Feature smoke test | `hooks/test-<feature>.sh` | Skipping tests when adding `hooks/lib/*.sh` |
 
 Pair every **don’t** with a **do** in rules (e.g. don’t add global `~/.grok/hooks/*.json` → do install via `grok plugin install`).
@@ -163,7 +162,7 @@ Human detail: [docs/skills.md](docs/skills.md#skill-gate-flow). Full meta-skill:
 1. **One JSON context per event** — `user-prompt.sh` merges all `UserPromptSubmit` parts; never add a second manifest entry for the same event.
 2. **Stop order** — only change in `hooks/lib/stop-chain.sh`; update `hooks/README.md` + tests.
 3. **New slash command** — add `hooks/lib/<feature>.sh`, source from `user-prompt.sh`, add `skills/<name>/SKILL.md` with `user_invocable: true`, add `hooks/test-<feature>.sh`.
-4. **Workspace paths** — constants in `hooks/lib/omo_state.py`; never hardcode user home directories in tracked files.
+4. **Workspace paths** — constants in `internal/boulder/`; never hardcode user home directories in tracked files.
 5. **Docs** — human guides in `docs/` and `README.md`; this file stays hook/skill oriented.
 
 Human docs: `docs/installation.md`, `docs/skills.md`, `docs/configuration.md`. Roadmap: `ROADMAP.md`.
@@ -190,7 +189,7 @@ Human docs: `docs/installation.md`, `docs/skills.md`, `docs/configuration.md`. R
 - **Paths in repo**: machine-agnostic (`$(pwd)`, `oh-my-grok/`); author metadata in `plugin.json` / LICENSE is fine; no contributor home directories in source.
 - **Hook JSON output**: one `additionalContext` per event per manifest path; `user-prompt.sh` merges parts.
 - **Tests**: temp dirs use `.omg/` subdirs; do not depend on a specific user workspace path.
-- **Python** in hooks: `omo_state.py` stays compatible with omo boulder schema where possible.
+- **Go** hooks (`internal/boulder/`, etc.) stay compatible with omo boulder schema where possible.
 
 ---
 
