@@ -61,6 +61,12 @@ tasks:
     cmds:
       - bash hooks/test-inline-skill-gate.sh
 
+  install:lefthook:
+    desc: Install lefthook CLI and register git pre-commit hook
+    cmds:
+      - go install github.com/evilmartians/lefthook/v2@latest
+      - lefthook install
+
   build:hooks:
     desc: Cross-compile bin/omg-hook-* (linux/darwin/windows)
     cmds:
