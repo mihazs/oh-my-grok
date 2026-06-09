@@ -15,13 +15,13 @@ Makes Grok significantly more effective at long-running tasks with proven loops 
 [![Grok Build](https://img.shields.io/badge/Grok%20Build-0.1.x%2B-111827?style=flat-square)](docs/installation.md)
 
 ```bash
-grok plugin install github/mihazs/oh-my-grok --trust && grok plugin enable oh-my-grok
+grok plugin install github.com/mihazs/oh-my-grok --trust && grok plugin enable oh-my-grok
 ```
 
 Pinned release:
 
 ```bash
-grok plugin install github/mihazs/oh-my-grok@v0.1.0 --trust
+grok plugin install github.com/mihazs/oh-my-grok@v0.1.0 --trust
 ```
 
 **Author:** [mihazs](https://github.com/mihazs) · **Repository:** https://github.com/mihazs/oh-my-grok
